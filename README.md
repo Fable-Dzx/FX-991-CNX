@@ -67,6 +67,6 @@ Windows PowerShell 若报 `npm.ps1 禁止运行脚本`，改用 CMD 终端执行
 
 - **原作者**：[ErnestThePoet](https://github.com/ErnestThePoet/ec-82-ms) —— 开源项目「EC-82MS 在线科学计算器」（MIT 许可），本项目的计算内核与基础界面源自该作品。
 - **改编作者**：[Fable-Dzx](https://github.com/Fable-Dzx/FX-991-CNX) —— 在原作者作品基础上完成 FX-991CN X 化改造：四大模式（CMPLX / BASE-N / EQN / STAT）、CLASSWIZ 深灰机身 UI、像素液晶屏、PWA 离线支持、移动端适配等。
-- **AI 辅助生成**：本项目开发过程中使用豆包（Doubao）进行代码生成、功能扩展、调试与文档整理等辅助工作。
+- **AI 辅助生成**：本项目开发过程中使用豆包（Doubao），Deepseek进行代码生成、功能扩展、调试与文档整理等辅助工作。
 
 核心实现思路另参考：<https://zhuanlan.zhihu.com/p/596644979>
