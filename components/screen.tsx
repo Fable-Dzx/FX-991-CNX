@@ -7,6 +7,7 @@ import * as L from "../logics/screen";
 import fx, { MODE_MENU_ITEMS } from "../observables/fx991-state";
 import * as FX from "../logics/fx991";
 import fxStyles from "../styles/fx991.module.scss";
+import PixelGlyph from "./pixel-glyph";
 
 /** 结果文本：ENG 工程计数激活时显示 ×10^3n 形式 */
 const displayResultText = (cs: typeof import("../observables/calculator-state").default) =>
@@ -132,8 +133,10 @@ export default class Screen extends React.Component {
                     <div className={styles.divNormalWrapper}>
                         <div role="entries">
                             {cs.entries.map((x, i) => (
-                                <img
+                                <PixelGlyph
                                     key={i}
+                                    svg={x.svg}
+                                    alt={x.id}
                                     className={
                                         cs.displayMode === "NORMAL_EDIT" &&
                                         i === cs.cursorIndex
@@ -142,17 +145,9 @@ export default class Screen extends React.Component {
                                                 : styles.imgOverwrite
                                             : styles.imgNormal
                                     }
-                                    alt={x.id}
-                                    draggable={false}
-                                    onContextMenu={(e) =>
-                                        e.preventDefault()
-                                    }
                                     onClick={() =>
                                         L.onKeyEntryImgClick(i)
                                     }
-                                    src={`data:image/svg+xml;utf8,${encodeURIComponent(
-                                        x.svg
-                                    )}`}
                                 />
                             ))}
                             <img
