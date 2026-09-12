@@ -20,8 +20,13 @@ class MyDocument extends Document {
                     {/* The viewport meta lives in _app.tsx so it overrides
                         Next.js' built-in default viewport. */}
                     <meta name="theme-color" content="#eaecf3" />
-                    <meta name="description" content="EC-82MS Online Scientific Calculator" />
-                    <link rel="icon" href="/ec-82-ms/favicon.ico" />
+                    <meta name="description" content="FX-991CN X Online Scientific Calculator (Casio-style CLASSWIZ)" />
+                    <link rel="icon" href="/FX-991-CNX/favicon.ico" />
+                    <link
+                        rel="manifest"
+                        href="/FX-991-CNX/manifest.json"></link>
+                    <meta name="apple-mobile-web-app-capable" content="yes" />
+                    <meta name="apple-mobile-web-app-title" content="FX-991CN X" />
                     <link
                         href="https://fonts.googleapis.com/css2?family=Ubuntu&display=swap"
                         rel="stylesheet"></link>

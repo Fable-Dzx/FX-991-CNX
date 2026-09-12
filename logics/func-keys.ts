@@ -6,7 +6,7 @@ import fx from "../observables/fx991-state";
 import * as FX from "./fx991";
 
 export const onR1C1Click = () => {
-    if (FX.isFxModeActive()) {
+    if (FX.isFxModeActive() || fx.showModeMenu) {
         cs.clearFuncMode();
         return;
     }
@@ -24,7 +24,7 @@ export const onR1C1Click = () => {
 };
 
 export const onR1C2Click = () => {
-    if (FX.isFxModeActive()) {
+    if (FX.isFxModeActive() || fx.showModeMenu) {
         cs.clearFuncMode();
         return;
     }
@@ -42,7 +42,7 @@ export const onR1C2Click = () => {
 };
 
 export const onR1C3Click = () => {
-    if (FX.isFxModeActive()) {
+    if (FX.isFxModeActive() || fx.showModeMenu) {
         cs.clearFuncMode();
         return;
     }
@@ -60,7 +60,7 @@ export const onR1C3Click = () => {
 };
 
 export const onR1C4Click = () => {
-    if (FX.isFxModeActive()) {
+    if (FX.isFxModeActive() || fx.showModeMenu) {
         cs.clearFuncMode();
         return;
     }
@@ -78,7 +78,7 @@ export const onR1C4Click = () => {
 };
 
 export const onR2C1Click = () => {
-    if (FX.isFxModeActive()) {
+    if (FX.isFxModeActive() || fx.showModeMenu) {
         cs.clearFuncMode();
         return;
     }
@@ -94,7 +94,7 @@ export const onR2C1Click = () => {
 };
 
 export const onR2C2Click = () => {
-    if (FX.isFxModeActive()) {
+    if (FX.isFxModeActive() || fx.showModeMenu) {
         cs.clearFuncMode();
         return;
     }
@@ -110,7 +110,7 @@ export const onR2C2Click = () => {
 };
 
 export const onR2C3Click = () => {
-    if (FX.isFxModeActive()) {
+    if (FX.isFxModeActive() || fx.showModeMenu) {
         cs.clearFuncMode();
         return;
     }
@@ -126,7 +126,7 @@ export const onR2C3Click = () => {
 };
 
 export const onR2C4Click = () => {
-    if (FX.isFxModeActive()) {
+    if (FX.isFxModeActive() || fx.showModeMenu) {
         cs.clearFuncMode();
         return;
     }
@@ -144,7 +144,7 @@ export const onR2C4Click = () => {
 };
 
 export const onR2C5Click = () => {
-    if (FX.isFxModeActive()) {
+    if (FX.isFxModeActive() || fx.showModeMenu) {
         cs.clearFuncMode();
         return;
     }
@@ -162,7 +162,7 @@ export const onR2C5Click = () => {
 };
 
 export const onR2C6Click = () => {
-    if (FX.isFxModeActive()) {
+    if (FX.isFxModeActive() || fx.showModeMenu) {
         cs.clearFuncMode();
         return;
     }
@@ -182,8 +182,9 @@ export const onR2C6Click = () => {
 };
 
 export const onR3C1Click = () => {
-    if (FX.isFxModeActive()) {
+    if (FX.isFxModeActive() || fx.showModeMenu) {
         cs.clearFuncMode();
+        FX.onNegate();
         return;
     }
     if (cs.displayMode !== "NORMAL_EDIT" && cs.displayMode !== "NORMAL_SHOW") {
@@ -204,7 +205,7 @@ export const onR3C1Click = () => {
 };
 
 export const onR3C2Click = () => {
-    if (FX.isFxModeActive()) {
+    if (FX.isFxModeActive() || fx.showModeMenu) {
         FX.onDegreeKey();
         cs.clearFuncMode();
         return;
@@ -235,7 +236,7 @@ export const onR3C2Click = () => {
 };
 
 export const onR3C3Click = () => {
-    if (FX.isFxModeActive()) {
+    if (FX.isFxModeActive() || fx.showModeMenu) {
         cs.clearFuncMode();
         return;
     }
@@ -258,7 +259,7 @@ export const onR3C3Click = () => {
 };
 
 export const onR3C4Click = () => {
-    if (FX.isFxModeActive()) {
+    if (FX.isFxModeActive() || fx.showModeMenu) {
         cs.clearFuncMode();
         return;
     }
@@ -289,7 +290,7 @@ export const onR3C4Click = () => {
 };
 
 export const onR3C5Click = () => {
-    if (FX.isFxModeActive()) {
+    if (FX.isFxModeActive() || fx.showModeMenu) {
         cs.clearFuncMode();
         return;
     }
@@ -319,7 +320,7 @@ export const onR3C5Click = () => {
 };
 
 export const onR3C6Click = () => {
-    if (FX.isFxModeActive()) {
+    if (FX.isFxModeActive() || fx.showModeMenu) {
         cs.clearFuncMode();
         return;
     }
@@ -349,7 +350,7 @@ export const onR3C6Click = () => {
 };
 
 export const onR4C1Click = () => {
-    if (FX.isFxModeActive()) {
+    if (FX.isFxModeActive() || fx.showModeMenu) {
         cs.clearFuncMode();
         return;
     }
@@ -369,8 +370,9 @@ export const onR4C1Click = () => {
 };
 
 export const onR4C2Click = () => {
-    // ENG 键：CMPLX 模式下输入 i；SHIFT+ENG 切换极坐标显示
-    if (FX.isFxModeActive()) {
+    // ENG 键：CMPLX 模式下输入 i；SHIFT+ENG 切换极坐标显示；
+    // COMP 模式下把结果显示为工程计数（×10^3n），再按指数 +3
+    if (FX.isFxModeActive() || fx.showModeMenu) {
         if (cs.funcMode === "SHIFT") {
             FX.onShiftEng();
         } else {
@@ -379,12 +381,14 @@ export const onR4C2Click = () => {
         cs.clearFuncMode();
         return;
     }
-    // 计算模式原样保留（原实现为空操作）
+    if (cs.displayMode === "NORMAL_SHOW") {
+        cs.toggleEng();
+    }
     cs.clearFuncMode();
 };
 
 export const onR4C3Click = () => {
-    if (FX.isFxModeActive()) {
+    if (FX.isFxModeActive() || fx.showModeMenu) {
         if (fx.mode === "CMPLX") {
             fx.cplxAppend("(");
         }
@@ -403,7 +407,7 @@ export const onR4C3Click = () => {
 };
 
 export const onR4C4Click = () => {
-    if (FX.isFxModeActive()) {
+    if (FX.isFxModeActive() || fx.showModeMenu) {
         if (fx.mode === "CMPLX") {
             fx.cplxAppend(")");
         }
@@ -428,7 +432,7 @@ export const onR4C4Click = () => {
 };
 
 export const onR4C5Click = () => {
-    if (FX.isFxModeActive()) {
+    if (FX.isFxModeActive() || fx.showModeMenu) {
         cs.clearFuncMode();
         return;
     }
@@ -450,7 +454,7 @@ export const onR4C5Click = () => {
 };
 
 export const onR4C6Click = () => {
-    if (FX.isFxModeActive()) {
+    if (FX.isFxModeActive() || fx.showModeMenu) {
         cs.clearFuncMode();
         return;
     }

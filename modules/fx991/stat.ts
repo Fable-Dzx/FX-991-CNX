@@ -69,3 +69,49 @@ export const statResultToLines = (r: StatResult): string[] => [
     `Σx=${fmt(r.sum)}`,
     `Σx²=${fmt(r.sumSq)}`
 ];
+
+/* ------------------------------------------------------------------ */
+/* 双变量线性回归：y = a + b x，输出 a / b / r（相关系数）              */
+/* ------------------------------------------------------------------ */
+
+export interface RegResult {
+    /** 截距 */
+    a: Decimal;
+    /** 斜率 */
+    b: Decimal;
+    /** 相关系数 */
+    r: Decimal;
+}
+
+const ZERO = new Decimal(0);
+
+export function computeReg2d(xs: Decimal[], ys: Decimal[]): RegResult {
+    const n = xs.length;
+    if (n === 0) {
+        return { a: ZERO, b: ZERO, r: ZERO };
+    }
+    let sx = ZERO, sy = ZERO, sxy = ZERO, sxx = ZERO, syy = ZERO;
+    for (let i = 0; i < n; i++) {
+        const x = xs[i];
+        const y = ys[i];
+        sx = sx.plus(x);
+        sy = sy.plus(y);
+        sxy = sxy.plus(x.mul(y));
+        sxx = sxx.plus(x.mul(x));
+        syy = syy.plus(y.mul(y));
+    }
+    const nD = new Decimal(n);
+    const num = nD.mul(sxy).minus(sx.mul(sy));
+    const denomB = nD.mul(sxx).minus(sx.mul(sx));
+    const b = denomB.isZero() ? new Decimal(0) : num.div(denomB);
+    const a = sy.minus(b.mul(sx)).div(nD);
+    const denomR = denomB.mul(nD.mul(syy).minus(sy.mul(sy)));
+    const r = denomR.isZero() ? new Decimal(0) : num.div(denomR.sqrt());
+    return { a, b, r };
+}
+
+export const regResultToLines = (r: RegResult): string[] => [
+    `a=${fmt(r.a)}`,
+    `b=${fmt(r.b)}`,
+    `r=${fmt(r.r)}`
+];

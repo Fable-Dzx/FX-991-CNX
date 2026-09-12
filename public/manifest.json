@@ -1,0 +1,19 @@
+{
+  "name": "FX-991CN X Calculator",
+  "short_name": "FX-991CN X",
+  "description": "Casio-style CLASSWIZ scientific calculator: CMPLX / BASE-N / EQN / STAT",
+  "start_url": "/FX-991-CNX/",
+  "scope": "/FX-991-CNX/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#eaecf3",
+  "theme_color": "#eaecf3",
+  "icons": [
+    {
+      "src": "/FX-991-CNX/favicon.ico",
+      "sizes": "any",
+      "type": "image/x-icon",
+      "purpose": "any"
+    }
+  ]
+}

@@ -1,10 +1,20 @@
 @import "./common/anims";
 @import "./common/common";
 
+// CASIO 真机液晶屏：点阵像素字符 + 灰绿面板。
+// 屏幕内所有文本统一使用像素字体 var(--font-lcd)，还原 5×7 点阵观感。
+@mixin lcd-font {
+    font-family: var(--font-lcd), "Courier New", monospace;
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: grayscale;
+    font-smooth: never;
+}
+
 .divScreenWrapper {
     box-sizing: border-box;
     background-color: #d6e0d4;
 
+    position: relative;
     flex-grow: 1;
 
     width: calc(100% - 2em);
@@ -15,7 +25,24 @@
     border: 1px solid #0e1216;
     box-shadow: inset 0 0 10px rgb(0 0 0 / 28%);
     border-radius: 12px;
-    background: linear-gradient(180deg, #e4ead9, #d0dccf);
+    background:
+        // 点阵像素网格（模拟 LCD 像素点）
+        radial-gradient(circle at 1px 1px, rgb(0 60 30 / 9%) 1px, transparent 1.5px),
+        linear-gradient(180deg, #e4ead9, #d0dccf);
+    background-size: 3px 3px, auto;
+}
+
+// 结果已复制提示（绝对定位于屏幕右上角）
+.copiedTip {
+    @include lcd-font;
+    position: absolute;
+    top: 4px;
+    right: 10px;
+    font-size: 11px;
+    color: #0a3d1e;
+    opacity: 0.85;
+    pointer-events: none;
+    z-index: 2;
 }
 
 // On small landscape screens (typical Android phones) the viewport height
@@ -63,7 +90,10 @@
     }
 
     > div[role="result"] {
-        font-size: 42px;
+        @include lcd-font;
+        font-size: 38px;
+        color: #0a3d1e;
+        text-shadow: 0 0 1px rgb(10 61 30 / 55%);
         word-wrap: break-word;
         text-align: end;
         flex-grow: 1;
@@ -73,8 +103,9 @@
     }
 
     > div[role="error"] {
-        color: red;
-        font-size: 18px;
+        @include lcd-font;
+        color: #b30000;
+        font-size: 16px;
         word-wrap: break-word;
         text-align: start;
 
@@ -85,6 +116,7 @@
     }
 
     > div[role="mode"] {
+        @include lcd-font;
         font-size: 12px;
         font-weight: bold;
         height: 8%;

@@ -10,7 +10,7 @@ import {
     solveLinear2,
     solveLinear3
 } from "../modules/fx991/eqn";
-import { computeStat, StatResult } from "../modules/fx991/stat";
+import { computeStat, StatResult, computeReg2d, RegResult } from "../modules/fx991/stat";
 
 export type FxMode = "COMP" | "CMPLX" | "BASE_N" | "EQN" | "STAT";
 
@@ -64,10 +64,18 @@ class Fx991State {
     eqnDone: boolean = false;
 
     // ---- STAT ----
+    /** 统计类型：null=未选择；1VAR 单变量；2VAR 双变量回归 */
+    statKind: "1VAR" | "2VAR" | null = null;
     statData: Decimal[] = [];
     statResult: StatResult | null = null;
     statDone: boolean = false;
     statEditIndex: number = -1;
+    /** 双变量数据对 */
+    stat2dData: { x: Decimal; y: Decimal }[] = [];
+    /** 双变量录入阶段：先输入 x，再输入 y */
+    stat2dStage: "X" | "Y" = "X";
+    /** 线性回归结果 a / b / r */
+    statReg: RegResult | null = null;
 
     /* ---------------- 模式切换 ---------------- */
 
@@ -91,6 +99,10 @@ class Fx991State {
         this.statResult = null;
         this.statDone = false;
         this.statEditIndex = -1;
+        this.statKind = null;
+        this.stat2dData = [];
+        this.stat2dStage = "X";
+        this.statReg = null;
     }
 
     openModeMenu() {
@@ -301,6 +313,55 @@ class Fx991State {
     statReEdit() {
         this.statDone = false;
         this.statResult = null;
+    }
+
+    /* ---------------- STAT 2-VAR ---------------- */
+
+    setStatKind(k: "1VAR" | "2VAR") {
+        this.statKind = k;
+        this.statData = [];
+        this.statResult = null;
+        this.statDone = false;
+        this.stat2dData = [];
+        this.stat2dStage = "X";
+        this.statReg = null;
+        this.cplxInput = "";
+    }
+
+    /** 2-VAR：确认当前阶段输入。X 阶段暂存并转到 Y；Y 阶段配对存入 */
+    stat2dEnter(v: Decimal): boolean {
+        if (this.stat2dStage === "X") {
+            this.stat2dPendingX = v;
+            this.stat2dStage = "Y";
+            return false;
+        }
+        this.stat2dData.push({ x: this.stat2dPendingX, y: v });
+        this.stat2dStage = "X";
+        return true;
+    }
+
+    /** 2-VAR：暂存刚输入的 x，等 y 输入后配对 */
+    stat2dPendingX: Decimal = new Decimal(0);
+
+    stat2dUndo() {
+        if (this.stat2dStage === "Y") {
+            this.stat2dStage = "X";
+            return;
+        }
+        if (this.stat2dData.length > 0) {
+            this.stat2dData.pop();
+        }
+    }
+
+    statCompute2d() {
+        if (this.stat2dData.length === 0) {
+            this.setFxError("No data");
+            return;
+        }
+        const xs = this.stat2dData.map(d => d.x);
+        const ys = this.stat2dData.map(d => d.y);
+        this.statReg = computeReg2d(xs, ys);
+        this.statDone = true;
     }
 
     /* ---------------- error ---------------- */

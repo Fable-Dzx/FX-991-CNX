@@ -17,6 +17,8 @@ import { parse } from "../modules/calc-core/parse";
 import { calculate } from "../modules/calc-core/calculate";
 import calculatorMemory from "./calculator-memory";
 
+const LN10 = new Decimal(10).ln();
+
 type CalculatorDisplayMode =
     | "NORMAL_EDIT"
     | "NORMAL_SHOW"
@@ -41,6 +43,9 @@ class CalculatorState {
 
     calcResult: InternalNumber = new InternalNumber("DEC", new Decimal(0));
     dispResult: InternalNumber = new InternalNumber("DEC", new Decimal(0));
+    /** ENG 工程计数：true 时结果以 ×10^3n 显示（COMP 模式按 ENG 键切换） */
+    engActive: boolean = false;
+    engExp: number = 0;
 
     errorMessage: string = "";
 
@@ -190,6 +195,51 @@ class CalculatorState {
         }
     }
 
+    /* ---------------- ENG 工程计数 ---------------- */
+
+    /** 首次按下：取当前值为 3 的倍数指数；再次按下：指数 +3 */
+    toggleEng() {
+        if (
+            this.displayMode !== "NORMAL_SHOW" ||
+            this.dispResult.type !== "DEC"
+        ) {
+            return;
+        }
+        const v = this.dispResult.dec;
+        if (!this.engActive) {
+            if (v.isZero()) {
+                this.engActive = true;
+                this.engExp = 0;
+                return;
+            }
+            const log10 = v.abs().ln().div(LN10);
+            const e = log10.floor().div(3).floor().mul(3);
+            this.engExp = e.toNumber();
+            this.engActive = true;
+        } else {
+            this.engExp += 3;
+        }
+    }
+
+    resetEng() {
+        this.engActive = false;
+        this.engExp = 0;
+    }
+
+    /** 工程计数文本：mantissa × 10^exp（exp 为 3 的倍数） */
+    engResultText(): string {
+        const v = this.dispResult.dec;
+        if (v.isZero()) {
+            return "0";
+        }
+        const mant = v.div(new Decimal(10).pow(this.engExp));
+        return (
+            mant.toSignificantDigits(12).toString() +
+            "×10^" +
+            this.engExp
+        );
+    }
+
     calculate() {
         if (this.entries.length === 0) {
             return;
@@ -224,6 +274,8 @@ class CalculatorState {
         }
 
         calculatorMemory.ans = calculateResult.result!;
+
+        this.resetEng();
 
         this.displayMode = "NORMAL_SHOW";
     }

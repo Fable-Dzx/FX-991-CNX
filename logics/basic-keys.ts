@@ -5,7 +5,8 @@ import cs from "../observables/calculator-state";
 import fx from "../observables/fx991-state";
 import * as FX from "./fx991";
 
-const fxActive = (): boolean => FX.isFxModeActive();
+// FX 键路由：非 COMP 模式，或 MODE 菜单打开时（数字键用于选择模式）
+const fxActive = (): boolean => FX.isFxModeActive() || fx.showModeMenu;
 
 export const onR1C1Click = () => {
     if (fxActive()) {

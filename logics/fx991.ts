@@ -30,7 +30,7 @@ import {
     baseNotOp
 } from "../modules/fx991/basen";
 import { EqnType, solveQuadratic, solveCubic, solveLinear2, solveLinear3 } from "../modules/fx991/eqn";
-import { statResultToLines } from "../modules/fx991/stat";
+import { statResultToLines, regResultToLines } from "../modules/fx991/stat";
 
 /* ================================================================== */
 /* 模式入口：各物理键在非 COMP 模式下分发给这里                        */
@@ -106,7 +106,16 @@ export const onDigit = (d: string) => {
             }
             break;
         case "STAT":
-            fx.cplxAppend(d); // 复用输入缓冲
+            // 未选择统计类型时，数字键 1/2 选择 1-VAR / 2-VAR
+            if (fx.statKind === null) {
+                if (d === "1" || d === "2") {
+                    fx.setStatKind(d === "1" ? "1VAR" : "2VAR");
+                } else {
+                    fx.setFxError("1:1-VAR 2:2-VAR");
+                }
+            } else {
+                fx.cplxAppend(d); // 复用输入缓冲
+            }
             break;
     }
 };
@@ -123,6 +132,26 @@ export const onDot = () => {
             break;
         case "STAT":
             fx.cplxAppend(".");
+            break;
+    }
+};
+
+export const onNegate = () => {
+    switch (fx.mode) {
+        case "CMPLX":
+            fx.cplxAppend("-");
+            break;
+        case "BASE_N":
+            fx.setFxError("Invalid digit");
+            break;
+        case "EQN":
+            // 未选择方程类型时忽略负号；否则切换当前系数符号
+            if (fx.eqnType !== null) {
+                fx.eqnAppendDigit("-");
+            }
+            break;
+        case "STAT":
+            fx.cplxAppend("-");
             break;
     }
 };
@@ -242,6 +271,22 @@ export const onEq = () => {
             fx.eqnEnter();
             break;
         case "STAT":
+            if (fx.statKind === null) {
+                fx.setFxError("1:1-VAR 2:2-VAR");
+                break;
+            }
+            if (fx.statKind === "2VAR") {
+                // 录入 x，= 后转入 y；录入 y，= 后配对存入
+                try {
+                    const v = new Decimal(fx.cplxInput || "0");
+                    fx.stat2dEnter(v);
+                    fx.cplxInput = "";
+                    fx.setFxError("");
+                } catch (e) {
+                    fx.setFxError((e as Error).message || "Syntax ERROR");
+                }
+                break;
+            }
             // 录入一条数据
             try {
                 const v = new Decimal(fx.cplxInput || "0");
@@ -271,6 +316,14 @@ export const onDel = () => {
             fx.eqnBackspace();
             break;
         case "STAT":
+            if (fx.statKind === "2VAR") {
+                if (fx.cplxInput) {
+                    fx.cplxBackspace();
+                } else {
+                    fx.stat2dUndo();
+                }
+                break;
+            }
             if (fx.cplxInput) {
                 fx.cplxBackspace();
             } else {
@@ -292,6 +345,15 @@ export const onAc = () => {
             fx.eqnClearAll();
             break;
         case "STAT":
+            if (fx.statKind === "2VAR") {
+                // AC：直接重置双变量数据
+                fx.stat2dData = [];
+                fx.stat2dStage = "X";
+                fx.statReg = null;
+                fx.statDone = false;
+                fx.cplxInput = "";
+                break;
+            }
             // AC 完成录入并显示统计结果（再按一次清空数据）
             if (!fx.statDone && fx.statData.length > 0) {
                 fx.statCompute();
@@ -317,9 +379,13 @@ export const onShiftDigit = (d: string) => {
             onBaseShiftDigit(d);
             break;
         case "STAT":
-            // SHIFT+1 查看统计结果
+            // SHIFT+1 查看统计/回归结果
             if (d === "1") {
-                if (!fx.statDone) {
+                if (fx.statKind === "2VAR") {
+                    if (!fx.statDone) {
+                        fx.statCompute2d();
+                    }
+                } else if (!fx.statDone) {
                     fx.statCompute();
                 }
             } else {
@@ -523,6 +589,17 @@ export const fxScreenLines = (): string[] => {
             return lines;
         }
         case "STAT": {
+            if (fx.statKind === null) {
+                return ["STAT", "1:1-VAR", "2:2-VAR"];
+            }
+            if (fx.statKind === "2VAR") {
+                if (fx.statDone && fx.statReg) {
+                    return regResultToLines(fx.statReg);
+                }
+                const lines = fx.stat2dData.map((d, i) => `${i + 1}:${d.x},${d.y}`);
+                lines.push(`${fx.stat2dStage}=${fx.cplxInput || "0"}`);
+                return lines;
+            }
             if (fx.statDone && fx.statResult) {
                 const lines = statResultToLines(fx.statResult);
                 return lines;

@@ -8,13 +8,39 @@ import fx, { MODE_MENU_ITEMS } from "../observables/fx991-state";
 import * as FX from "../logics/fx991";
 import fxStyles from "../styles/fx991.module.scss";
 
+/** 结果文本：ENG 工程计数激活时显示 ×10^3n 形式 */
+const displayResultText = (cs: typeof import("../observables/calculator-state").default) =>
+    cs.engActive && cs.dispResult.type === "DEC"
+        ? cs.engResultText()
+        : cs.dispResult.toString();
+
+/** 点击结果复制到剪贴板，并短暂显示 COPIED 提示 */
+const copyResult = (
+    cs: typeof import("../observables/calculator-state").default,
+    setCopied: (b: boolean) => void
+) => {
+    const text = displayResultText(cs);
+    if (navigator.clipboard?.writeText) {
+        navigator.clipboard
+            .writeText(text)
+            .then(() => {
+                setCopied(true);
+                setTimeout(() => setCopied(false), 1200);
+            })
+            .catch(() => {});
+    }
+};
+
 export default class Screen extends React.Component {
     constructor(props: {}) {
         super(props);
     }
 
-    ThisComponent = observer(() => (
+    ThisComponent = observer(() => {
+        const [copied, setCopied] = React.useState(false);
+        return (
         <div className={styles.divScreenWrapper}>
+            {copied && <div className={styles.copiedTip}>COPIED</div>}
             {fx.showModeMenu && (
                 <div className={fxStyles.divModeMenuWrapper}>
                     <div className={fxStyles.modeMenuTitle}>MODE MENU</div>
@@ -160,8 +186,11 @@ export default class Screen extends React.Component {
                         )}
 
                         {cs.displayMode !== "ERROR" && (
-                            <div role="result">
-                                {cs.dispResult.toString()}
+                            <div
+                                role="result"
+                                title="点击复制结果"
+                                onClick={() => copyResult(cs, setCopied)}>
+                                {displayResultText(cs)}
                             </div>
                         )}
 
@@ -177,7 +206,8 @@ export default class Screen extends React.Component {
                     </div>
                 )}
         </div>
-    ));
+        );
+    });
 
     render = () => <this.ThisComponent />;
 }
