@@ -4,40 +4,63 @@
 
     display: flex;
     flex-direction: column;
-    justify-content: center;
 
     padding: 4px 8px;
     box-sizing: border-box;
 
-    > div {
-        font-family: var(--font-lcd), "Courier New", monospace;
-        -webkit-font-smoothing: none;
-        font-size: 15px;
-        font-weight: bold;
-        text-align: start;
-        padding: 5px 12px;
-        margin: 3px 0;
-        border-radius: 8px;
-        cursor: pointer;
-        user-select: none;
-        color: #0a3d1e;
-        background-color: #eef2e9;
+    .modeMenuGrid {
+        flex: 1;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: repeat(4, 1fr);
+        gap: 4px;
+        padding: 2px 2px;
 
-        &:hover {
-            background-color: #dfe8da;
-        }
+        > div {
+            font-family: var(--font-lcd), "Courier New", monospace;
+            -webkit-font-smoothing: none;
+            font-size: 14px;
+            font-weight: bold;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1px;
+            text-align: center;
+            color: #0a3d1e;
+            border: 1px solid rgba(10, 61, 30, 0.45);
+            cursor: pointer;
+            user-select: none;
+            line-height: 1.15;
 
-        &:active {
-            background-color: #c9d6c2;
+            &:hover {
+                background-color: rgba(10, 61, 30, 0.1);
+            }
+
+            &:active {
+                background-color: rgba(10, 61, 30, 0.2);
+            }
         }
     }
 }
 
+.modeMenuKey {
+    font-size: 11px;
+    opacity: 0.75;
+}
+
+.modeMenuItemActive {
+    background-color: rgba(10, 61, 30, 0.16) !important;
+    outline: 1px dashed rgba(10, 61, 30, 0.5);
+    outline-offset: -2px;
+}
+
 .modeMenuTitle {
-    font-size: 16px;
+    font-size: 15px;
     text-align: center;
     background-color: transparent !important;
     color: #0a3d1e;
+    margin-bottom: 4px;
 }
 
 .divFxWrapper {

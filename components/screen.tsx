@@ -4,7 +4,7 @@ import cs from "../observables/calculator-state";
 import styles from "../styles/screen.module.scss";
 import stringsRes from "../observables/strings-res";
 import * as L from "../logics/screen";
-import fx, { MODE_MENU_ITEMS } from "../observables/fx991-state";
+import fx, { MODE_MENU_ITEMS, FX_MODES } from "../observables/fx991-state";
 import * as FX from "../logics/fx991";
 import fxStyles from "../styles/fx991.module.scss";
 
@@ -44,15 +44,33 @@ export default class Screen extends React.Component {
             {fx.showModeMenu && (
                 <div className={fxStyles.divModeMenuWrapper}>
                     <div className={fxStyles.modeMenuTitle}>MODE MENU</div>
-                    {MODE_MENU_ITEMS.map(item => (
+                    <div className={fxStyles.modeMenuGrid}>
+                        {MODE_MENU_ITEMS.map(item => (
+                            <div
+                                key={item.key}
+                                className={
+                                    fx.mode ===
+                                    FX_MODES[Number(item.key) - 1]
+                                        ? fxStyles.modeMenuItemActive
+                                        : undefined
+                                }
+                                onClick={() => FX.onModeMenuSelect(item.key)}>
+                                <span className={fxStyles.modeMenuKey}>
+                                    {item.key}
+                                </span>
+                                {item.label}
+                            </div>
+                        ))}
                         <div
-                            key={item.key}
-                            onClick={() => FX.onModeMenuSelect(item.key)}>
-                            {item.key}: {item.label}
+                            className={
+                                cs.displayMode === "DRG"
+                                    ? fxStyles.modeMenuItemActive
+                                    : undefined
+                            }
+                            onClick={() => FX.onModeMenuSelect("6")}>
+                            <span className={fxStyles.modeMenuKey}>6</span>
+                            DRG 角度单位
                         </div>
-                    ))}
-                    <div onClick={() => FX.onModeMenuSelect("6")}>
-                        6: DRG 角度单位
                     </div>
                 </div>
             )}
