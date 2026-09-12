@@ -7,8 +7,8 @@ const nextConfig = {
   output: 'export',
 
   // ========== 子路径部署（匹配你的仓库名） ==========
-  basePath: "/ec-82-ms",
-  assetPrefix: "/ec-82-ms",
+  basePath: "/FX-991-CNX",
+  assetPrefix: "/FX-991-CNX",
 
   // ========== 关闭图片优化 ==========
   images: {
