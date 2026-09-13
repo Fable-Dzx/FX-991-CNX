@@ -112,11 +112,11 @@ export default class Screen extends React.Component {
 
             {cs.displayMode === "ABOUT" && (
                 <div className={styles.divAboutWrapper}>
-                    <title>{"Ernest's Web Calculator EC-82MS"}</title>
-                    <title>{"Made with LOVE❤️ by Ernest Cui"}</title>
+                    <title>{"FX-991-CNX — Web Scientific Calculator"}</title>
+                    <title>{"Adapted from EC-82MS · Made with LOVE❤️ by Ernest Cui"}</title>
                     <title>{"August, 2022"}</title>
                     <div>
-                        Repositories:
+                        Original project:
                         <a href="https://github.com/ErnestThePoet/ec-82-ms">
                             Github
                         </a>

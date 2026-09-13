@@ -1,7 +1,7 @@
 {
   "name": "FX-991CN X Calculator",
   "short_name": "FX-991CN X",
-  "description": "Casio-style CLASSWIZ scientific calculator: CMPLX / BASE-N / EQN / STAT",
+  "description": "FX-991CN X style online scientific calculator: CMPLX / BASE-N / EQN / STAT",
   "start_url": "/FX-991-CNX/",
   "scope": "/FX-991-CNX/",
   "display": "standalone",

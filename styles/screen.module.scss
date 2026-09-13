@@ -1,7 +1,7 @@
 @import "./common/anims";
 @import "./common/common";
 
-// CASIO 真机液晶屏：点阵像素字符 + 灰绿面板。
+// 真机液晶屏：点阵像素字符 + 灰绿面板。
 // 屏幕内所有文本统一使用像素字体 var(--font-lcd)，还原 5×7 点阵观感。
 @mixin lcd-font {
     font-family: var(--font-lcd), "Courier New", monospace;

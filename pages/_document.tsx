@@ -20,7 +20,7 @@ class MyDocument extends Document {
                     {/* The viewport meta lives in _app.tsx so it overrides
                         Next.js' built-in default viewport. */}
                     <meta name="theme-color" content="#eaecf3" />
-                    <meta name="description" content="FX-991CN X Online Scientific Calculator (Casio-style CLASSWIZ)" />
+                    <meta name="description" content="FX-991CN X Online Scientific Calculator" />
                     <link rel="icon" href="/FX-991-CNX/favicon.ico" />
                     <link
                         rel="manifest"

@@ -14,8 +14,8 @@ export default class Panel extends React.Component {
     render = () => (
         <div className={styles.divPanelWrapper}>
             <div className={styles.divBrand}>
-                <span className={styles.brandCasio}>CASIO</span>
-                <span className={styles.brandClasswiz}>CLASSWIZ</span>
+                <span className={styles.brandCasio}>FX-991-CNX</span>
+                <span className={styles.brandClasswiz}>WEB CALCULATOR</span>
             </div>
             <Screen />
             <SysKeys />

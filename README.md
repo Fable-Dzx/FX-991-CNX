@@ -1,6 +1,6 @@
 # FX-991CN X 在线科学计算器
 
-卡西欧 fx-991CN X（CLASSWIZ 深灰机身）风格的网页版科学计算器。
+FX-991CN X（深灰机身）风格的网页版科学计算器。
 基于 Next.js + MobX + TypeScript，静态导出后部署于 GitHub Pages。
 
 在线地址：<https://fable-dzx.github.io/FX-991-CNX/>
@@ -58,7 +58,7 @@ Windows PowerShell 若报 `npm.ps1 禁止运行脚本`，改用 CMD 终端执行
 1. PC 键盘事件（阻止浏览器默认行为、快捷键、Esc 退出菜单）
 2. 安卓移动端适配（viewport、触控、刘海安全区、横屏兼容）
 3. 功能升级：CMPLX / BASE-N / EQN / STAT 四大模式
-4. UI 改版：CLASSWIZ 深灰机身、CASIO 品牌条、淡绿液晶屏幕
+4. UI 改版：深灰机身、品牌条、淡绿液晶屏幕
 5. 仓库重命名 FX-991-CNX；GitHub Actions 升级至 Node 24
 6. basePath 修复，Pages 部署 404 解决
 7. 功能完善：EQN 负号修复、STAT 双变量回归、ENG 工程计数、结果复制、PWA、像素液晶屏
@@ -66,7 +66,7 @@ Windows PowerShell 若报 `npm.ps1 禁止运行脚本`，改用 CMD 终端执行
 ## 致谢
 
 - **原作者**：[ErnestThePoet](https://github.com/ErnestThePoet/ec-82-ms) —— 开源项目「EC-82MS 在线科学计算器」（MIT 许可），本项目的计算内核与基础界面源自该作品。
-- **改编作者**：[Fable-Dzx](https://github.com/Fable-Dzx/FX-991-CNX) —— 在原作者作品基础上完成 FX-991CN X 化改造：四大模式（CMPLX / BASE-N / EQN / STAT）、CLASSWIZ 深灰机身 UI、像素液晶屏、PWA 离线支持、移动端适配等。
+- **改编作者**：[Fable-Dzx](https://github.com/Fable-Dzx/FX-991-CNX) —— 在原作者作品基础上完成 FX-991CN X 化改造：四大模式（CMPLX / BASE-N / EQN / STAT）、深灰机身 UI、像素液晶屏、PWA 离线支持、移动端适配等。
 - **AI 辅助生成**：本项目开发过程中使用豆包（Doubao），Deepseek进行代码生成、功能扩展、调试与文档整理等辅助工作。
 
 核心实现思路另参考：<https://zhuanlan.zhihu.com/p/596644979>

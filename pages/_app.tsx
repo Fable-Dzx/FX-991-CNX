@@ -3,7 +3,7 @@ import Head from "next/head";
 import localFont from "next/font/local";
 import { useEffect } from "react";
 
-// CASIO fx-991CN X 液晶屏为点阵像素字符（5×7 dot-matrix），
+// 真机 fx-991CN X 液晶屏为点阵像素字符（5×7 dot-matrix），
 // 用像素字体渲染屏幕输出，复刻真机 LCD 观感。
 const lcdFont = localFont({
     src: "../fonts/dotgothic16-latin.woff2",
