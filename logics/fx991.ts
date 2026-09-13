@@ -101,6 +101,8 @@ export const onDigit = (d: string) => {
             // 未选择方程类型时，数字键用于选择类型
             if (fx.eqnType === null) {
                 onEqnTypeSelect(d);
+            } else if (fx.eqnType === "SOLVE") {
+                // SOLVE 使用屏幕上的文本输入面板，物理数字键不参与
             } else {
                 fx.eqnAppendDigit(d);
             }
@@ -128,7 +130,9 @@ export const onDot = () => {
         case "BASE_N":
             break; // 进制模式无小数
         case "EQN":
-            fx.eqnAppendDigit(".");
+            if (fx.eqnType !== "SOLVE") {
+                fx.eqnAppendDigit(".");
+            }
             break;
         case "STAT":
             fx.cplxAppend(".");
@@ -145,8 +149,8 @@ export const onNegate = () => {
             fx.setFxError("Invalid digit");
             break;
         case "EQN":
-            // 未选择方程类型时忽略负号；否则切换当前系数符号
-            if (fx.eqnType !== null) {
+            // 未选择方程类型或 SOLVE 面板时忽略负号；否则切换当前系数符号
+            if (fx.eqnType !== null && fx.eqnType !== "SOLVE") {
                 fx.eqnAppendDigit("-");
             }
             break;
@@ -175,7 +179,7 @@ function onBinaryOp(op: string) {
             break;
         case "STAT":
         case "EQN":
-            if (op === "-") {
+            if (op === "-" && fx.eqnType !== "SOLVE") {
                 fx.eqnAppendDigit("-");
             }
             break;
@@ -313,7 +317,9 @@ export const onDel = () => {
             fx.baseBackspace();
             break;
         case "EQN":
-            fx.eqnBackspace();
+            if (fx.eqnType !== "SOLVE") {
+                fx.eqnBackspace();
+            }
             break;
         case "STAT":
             if (fx.statKind === "2VAR") {
@@ -342,7 +348,11 @@ export const onAc = () => {
             fx.baseClear();
             break;
         case "EQN":
-            fx.eqnClearAll();
+            if (fx.eqnType === "SOLVE") {
+                fx.solveClear();
+            } else {
+                fx.eqnClearAll();
+            }
             break;
         case "STAT":
             if (fx.statKind === "2VAR") {
@@ -512,7 +522,8 @@ export const onEqnTypeSelect = (d: string) => {
         "1": "QUAD",
         "2": "CUBIC",
         "3": "LINEAR2",
-        "4": "LINEAR3"
+        "4": "LINEAR3",
+        "5": "SOLVE"
     };
     const t = map[d];
     if (t) {
@@ -577,7 +588,18 @@ export const fxScreenLines = (): string[] => {
                 return lines.length > 0 ? lines : ["NO SOLUTION"];
             }
             if (fx.eqnType === null) {
-                return ["EQN", "1:aX²+bX+c=0", "2:aX³+...=0", "3:2-linear", "4:3-linear"];
+                return [
+                    "EQN",
+                    "1:aX²+bX+c=0",
+                    "2:aX³+...=0",
+                    "3:2-linear",
+                    "4:3-linear",
+                    "5:SOLVE f(x)=0"
+                ];
+            }
+            if (fx.eqnType === "SOLVE") {
+                // SOLVE 面板由 components/solve-panel.tsx 渲染
+                return ["SOLVE"];
             }
             const names = EQN_COEFF_NAMES[fx.eqnType];
             const idx = fx.eqnCoeffs.length;
@@ -617,6 +639,8 @@ export const fxScreenLines = (): string[] => {
 
 function eqnVarNames(t: EqnType): string[] {
     switch (t) {
+        case "SOLVE":
+            return [fx.solveVar.toUpperCase()];
         case "QUAD":
             return ["X1", "X2"];
         case "CUBIC":

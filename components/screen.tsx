@@ -7,6 +7,7 @@ import * as L from "../logics/screen";
 import fx, { MODE_MENU_ITEMS, FX_MODES } from "../observables/fx991-state";
 import * as FX from "../logics/fx991";
 import fxStyles from "../styles/fx991.module.scss";
+import SolvePanel from "./solve-panel";
 
 /** 结果文本：ENG 工程计数激活时显示 ×10^3n 形式 */
 const displayResultText = (cs: typeof import("../observables/calculator-state").default) =>
@@ -132,13 +133,17 @@ export default class Screen extends React.Component {
                     cs.displayMode === "ERROR") && (
                     <div className={fxStyles.divFxWrapper}>
                         <div role="fxmode">{FX.fxModeLabel()}</div>
-                        <div role="fxlines">
-                            {FX.fxScreenLines().map((line, i) => (
-                                <div key={i} className={fxStyles.fxLine}>
-                                    {line}
-                                </div>
-                            ))}
-                        </div>
+                        {fx.mode === "EQN" && fx.eqnType === "SOLVE" ? (
+                            <SolvePanel />
+                        ) : (
+                            <div role="fxlines">
+                                {FX.fxScreenLines().map((line, i) => (
+                                    <div key={i} className={fxStyles.fxLine}>
+                                        {line}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 )}
 

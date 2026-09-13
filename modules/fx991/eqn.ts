@@ -6,8 +6,9 @@ import Decimal from "decimal.js";
  * 系数为实数，结果可能是复数（以字符串形式标记 i）。
  */
 
-export type EqnType = "QUAD" | "CUBIC" | "LINEAR2" | "LINEAR3";
+export type EqnType = "QUAD" | "CUBIC" | "LINEAR2" | "LINEAR3" | "SOLVE";
 
+/** 系数录入式方程类型（不含 SOLVE，SOLVE 使用独立的文本输入面板） */
 export const EQN_TYPES: EqnType[] = ["QUAD", "CUBIC", "LINEAR2", "LINEAR3"];
 
 export interface EqnResult {

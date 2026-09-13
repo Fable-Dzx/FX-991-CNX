@@ -11,6 +11,8 @@ import {
     solveLinear3
 } from "../modules/fx991/eqn";
 import { computeStat, StatResult, computeReg2d, RegResult } from "../modules/fx991/stat";
+import { solveEquation, SolveResult } from "../modules/fx991/solve";
+import { CalculatorDRGMode } from "./calculator-state";
 
 export type FxMode = "COMP" | "CMPLX" | "BASE_N" | "EQN" | "STAT";
 
@@ -29,7 +31,9 @@ export const EQN_COEFF_NAMES: Record<EqnType, string[]> = {
     QUAD: ["a", "b", "c"],
     CUBIC: ["a", "b", "c", "d"],
     LINEAR2: ["a1", "b1", "c1", "a2", "b2", "c2"],
-    LINEAR3: ["a1", "b1", "c1", "d1", "a2", "b2", "c2", "d2", "a3", "b3", "c3", "d3"]
+    LINEAR3: ["a1", "b1", "c1", "d1", "a2", "b2", "c2", "d2", "a3", "b3", "c3", "d3"],
+    /** SOLVE 为文本方程输入，不使用系数录入流程 */
+    SOLVE: []
 };
 
 class Fx991State {
@@ -63,6 +67,16 @@ class Fx991State {
     eqnResult: EqnResult | null = null;
     eqnDone: boolean = false;
 
+    // ---- SOLVE（一键解方程，EQN 模式的第 5 类） ----
+    /** 方程文本，如 "x^2 - 4 = 0" */
+    solveEqn: string = "";
+    /** 求解变量，默认 x */
+    solveVar: string = "x";
+    /** 初始猜测值文本 */
+    solveGuess: string = "0";
+    /** 最近一次求解结果 */
+    solveResult: SolveResult | null = null;
+
     // ---- STAT ----
     /** 统计类型：null=未选择；1VAR 单变量；2VAR 双变量回归 */
     statKind: "1VAR" | "2VAR" | null = null;
@@ -95,6 +109,10 @@ class Fx991State {
         this.eqnCur = "";
         this.eqnResult = null;
         this.eqnDone = false;
+        this.solveEqn = "";
+        this.solveVar = "x";
+        this.solveGuess = "0";
+        this.solveResult = null;
         this.statData = [];
         this.statResult = null;
         this.statDone = false;
@@ -231,6 +249,10 @@ class Fx991State {
         if (this.eqnType === null || this.eqnResult) {
             return;
         }
+        if (this.eqnType === "SOLVE") {
+            // SOLVE 走独立的 solveRun 流程
+            return;
+        }
         const nums = this.eqnCoeffs.map(x => new Decimal(x || "0"));
         let result: EqnResult;
         switch (this.eqnType) {
@@ -288,6 +310,44 @@ class Fx991State {
             this.eqnResult = null;
             this.eqnDone = false;
         }
+    }
+
+    /* ---------------- SOLVE（一键解方程） ---------------- */
+
+    solveSetEqn(text: string) {
+        this.solveEqn = text;
+        this.errorMessage = "";
+    }
+
+    solveSetVar(v: string) {
+        this.solveVar = v;
+        this.errorMessage = "";
+    }
+
+    solveSetGuess(g: string) {
+        this.solveGuess = g;
+        this.errorMessage = "";
+    }
+
+    /** 执行一键求解；drg 取自计算器当前角度单位 */
+    solveRun(drg: CalculatorDRGMode) {
+        const guessText = this.solveGuess.trim();
+        const guessNum = Number(guessText === "" ? "0" : guessText);
+        this.solveResult = solveEquation(
+            this.solveEqn,
+            this.solveVar || "x",
+            guessNum,
+            drg
+        );
+    }
+
+    /** 清空 SOLVE 输入与结果 */
+    solveClear() {
+        this.solveEqn = "";
+        this.solveVar = "x";
+        this.solveGuess = "0";
+        this.solveResult = null;
+        this.errorMessage = "";
     }
 
     /* ---------------- STAT ---------------- */

@@ -7,7 +7,9 @@
     "build": "next build",
     "export": "next build && next export -o docs && touch docs/.nojekyll",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "test:solver": "tsc --module commonjs --target es2019 --strict --esModuleInterop --outDir .test-build test/solver-test.ts test/equation-test.ts test/solve-integration-test.ts && node .test-build/test/solver-test.js && node .test-build/test/equation-test.js && node .test-build/test/solve-integration-test.js"
   },
   "dependencies": {
     "decimal.js": "^10.4.0",

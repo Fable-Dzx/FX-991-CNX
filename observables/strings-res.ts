@@ -59,7 +59,29 @@ const STRINGS_ZH_CN = {
             STRINGS_ZH_CN_ERROR_PREFIXES.CALC + "操作数数量不足",
         OPERAND_STACK:
             STRINGS_ZH_CN_ERROR_PREFIXES.CALC + "操作数栈终止长度不为1"
-    }
+    },
+    SOLVE_UI: {
+        TITLE: "SOLVE 解方程",
+        EQN_LABEL: "方程",
+        EQN_PLACEHOLDER: "如 x^2 - 4 = 0",
+        VAR_LABEL: "变量",
+        GUESS_LABEL: "初始猜测值",
+        SOLVE_BTN: "Solve 一键求解",
+        CLEAR_BTN: "清空",
+        RESULT_ROOT: "根",
+        ITERATIONS: "迭代次数",
+        FINAL_VALUE: "f(根)",
+        CONVERGED: "已收敛",
+        NOT_CONVERGED: "未收敛",
+        FAIL_MSG: "未找到解，请调整初始猜测值或检查方程",
+        SINGLE_ROOT_NOTE: "牛顿法一次只给出一个解，多解方程请更换初始值再试。",
+        STATUS: {
+            ZERO_DERIVATIVE: "该点导数为 0，无法继续迭代",
+            DIVERGED: "迭代发散",
+            MAX_ITER_REACHED: "超过最大迭代次数",
+            NON_FINITE: "计算出现非法数值（如负数开方、log 非正数）"
+        }
+    },
 };
 
 const STRINGS_EN_ERROR_PREFIXES = {
@@ -133,7 +155,29 @@ const STRINGS_EN = {
         OPERAND_STACK:
             STRINGS_EN_ERROR_PREFIXES.CALC +
             "Operand stack remaining count is not 1"
-    }
+    },
+    SOLVE_UI: {
+        TITLE: "SOLVE",
+        EQN_LABEL: "Equation",
+        EQN_PLACEHOLDER: "e.g. x^2 - 4 = 0",
+        VAR_LABEL: "Variable",
+        GUESS_LABEL: "Initial guess",
+        SOLVE_BTN: "Solve",
+        CLEAR_BTN: "Clear",
+        RESULT_ROOT: "Root",
+        ITERATIONS: "Iterations",
+        FINAL_VALUE: "f(root)",
+        CONVERGED: "Converged",
+        NOT_CONVERGED: "Not converged",
+        FAIL_MSG: "No solution found. Adjust the initial guess or check the equation.",
+        SINGLE_ROOT_NOTE: "Newton's method returns one root at a time. Try different guesses for multiple roots.",
+        STATUS: {
+            ZERO_DERIVATIVE: "Zero derivative, cannot iterate",
+            DIVERGED: "Iteration diverged",
+            MAX_ITER_REACHED: "Max iterations reached",
+            NON_FINITE: "Non-finite value (e.g. sqrt of negative)"
+        }
+    },
 };
 
 export type LangType = "ZH_CN" | "EN";
