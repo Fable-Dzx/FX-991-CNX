@@ -353,6 +353,10 @@ export const onR4C2Click = () => {
 
 export const onR4C3Click = () => {
     if (fxActive()) {
+        // SOLVE：SHIFT+EXP 输入 π
+        if (FX.solveActive() && cs.funcMode === "SHIFT") {
+            FX.onSolveKey("pi");
+        }
         cs.clearFuncMode();
         return;
     }

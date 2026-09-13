@@ -11,6 +11,7 @@ import {
     solveLinear3
 } from "../modules/fx991/eqn";
 import { computeStat, StatResult, computeReg2d, RegResult } from "../modules/fx991/stat";
+import { SolveResult } from "../modules/fx991/solve";
 
 export type FxMode = "COMP" | "CMPLX" | "BASE_N" | "EQN" | "STAT";
 
@@ -77,6 +78,22 @@ class Fx991State {
     /** 线性回归结果 a / b / r */
     statReg: RegResult | null = null;
 
+    // ---- SOLVE ----
+    /** SOLVE 是否激活（EQN 类型选择按 5 进入） */
+    solveActive: boolean = false;
+    /** SOLVE 阶段：input=输入方程；guess=输入初始猜测；result=已求解 */
+    solveStage: "input" | "guess" | "result" = "input";
+    /** 方程文本（可含 =） */
+    solveExpr: string = "";
+    /** 初始猜测文本 */
+    solveGuess: string = "";
+    /** 解析后的求解结果 */
+    solveResult: SolveResult | null = null;
+    /** 求解错误信息（语法错误等） */
+    solveError: string = "";
+    /** 求解变量名（默认 x，由方程中的变量决定） */
+    solveVariable: string = "x";
+
     /* ---------------- 模式切换 ---------------- */
 
     setMode(m: FxMode) {
@@ -103,6 +120,13 @@ class Fx991State {
         this.stat2dData = [];
         this.stat2dStage = "X";
         this.statReg = null;
+        this.solveActive = false;
+        this.solveStage = "input";
+        this.solveExpr = "";
+        this.solveGuess = "";
+        this.solveResult = null;
+        this.solveError = "";
+        this.solveVariable = "x";
     }
 
     openModeMenu() {
@@ -372,6 +396,104 @@ class Fx991State {
 
     clearFxError() {
         this.errorMessage = "";
+    }
+
+    /* ---------------- SOLVE ---------------- */
+
+    /** 进入 SOLVE（从 EQN 类型选择） */
+    enterSolve() {
+        this.solveActive = true;
+        this.solveStage = "input";
+        this.solveExpr = "";
+        this.solveGuess = "";
+        this.solveResult = null;
+        this.solveError = "";
+        this.eqnType = null;
+        this.eqnCoeffs = [];
+        this.eqnResult = null;
+        this.eqnDone = false;
+    }
+
+    /** 退出 SOLVE 返回 EQN 类型选择 */
+    exitSolve() {
+        this.solveActive = false;
+        this.solveStage = "input";
+        this.solveExpr = "";
+        this.solveGuess = "";
+        this.solveResult = null;
+        this.solveError = "";
+        this.solveVariable = "x";
+    }
+
+    /** 追加字符到当前输入（方程或猜测） */
+    solveAppend(ch: string) {
+        if (this.solveResult) {
+            // 结果后输入数字/小数点/负号 → 换初始猜测重算；
+            // 其他字符（字母/运算符/括号）→ 开始新方程
+            const guessChar = /[0-9.\-]/.test(ch);
+            this.solveResult = null;
+            this.solveError = "";
+            if (guessChar) {
+                this.solveStage = "guess";
+                this.solveGuess = "";
+            } else {
+                this.solveStage = "input";
+                this.solveExpr = "";
+            }
+        }
+        if (this.solveStage === "input") {
+            // 方程：防止重复小数点
+            const last = this.solveExpr.slice(-1);
+            if (ch === "." && /[0-9.]/.test(last) && this.solveExpr.split(/[^0-9.]/).pop()!.includes(".")) {
+                return;
+            }
+            this.solveExpr += ch;
+        } else if (this.solveStage === "guess") {
+            if (ch === "-") {
+                if (this.solveGuess === "") {
+                    this.solveGuess = "-";
+                } else if (this.solveGuess === "-") {
+                    this.solveGuess = "";
+                }
+                return;
+            }
+            const last = this.solveGuess.slice(-1);
+            if (ch === "." && last !== "" && this.solveGuess.includes(".")) {
+                return;
+            }
+            this.solveGuess += ch;
+        }
+    }
+
+    solveBackspace() {
+        if (this.solveResult) {
+            return;
+        }
+        if (this.solveStage === "input" && this.solveExpr.length > 0) {
+            this.solveExpr = this.solveExpr.slice(0, -1);
+        } else if (this.solveStage === "guess" && this.solveGuess.length > 0) {
+            this.solveGuess = this.solveGuess.slice(0, -1);
+        }
+    }
+
+    solveClearAll() {
+        this.solveExpr = "";
+        this.solveGuess = "";
+        this.solveResult = null;
+        this.solveError = "";
+        this.solveStage = "input";
+    }
+
+    setSolveResult(r: SolveResult) {
+        this.solveResult = r;
+        this.solveError = "";
+        this.solveStage = "result";
+    }
+
+    setSolveError(msg: string) {
+        this.solveError = msg;
+        this.solveResult = null;
+        this.solveStage = "input";
     }
 }
 

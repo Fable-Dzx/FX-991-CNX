@@ -31,6 +31,17 @@ import {
 } from "../modules/fx991/basen";
 import { EqnType, solveQuadratic, solveCubic, solveLinear2, solveLinear3 } from "../modules/fx991/eqn";
 import { statResultToLines, regResultToLines } from "../modules/fx991/stat";
+import {
+    compileEquation,
+    solveByNewton,
+    formatRoot,
+    CompiledFunction
+} from "../modules/fx991/solve";
+
+/** SOLVE 已编译方程（非 observable：函数不适合放入 MobX store） */
+let solveFn: CompiledFunction | null = null;
+
+export const solveActive = (): boolean => fx.solveActive;
 
 /* ================================================================== */
 /* 模式入口：各物理键在非 COMP 模式下分发给这里                        */
@@ -98,6 +109,11 @@ export const onDigit = (d: string) => {
             }
             break;
         case "EQN":
+            // SOLVE 激活时数字输入方程/猜测
+            if (fx.solveActive) {
+                fx.solveAppend(d);
+                break;
+            }
             // 未选择方程类型时，数字键用于选择类型
             if (fx.eqnType === null) {
                 onEqnTypeSelect(d);
@@ -128,6 +144,10 @@ export const onDot = () => {
         case "BASE_N":
             break; // 进制模式无小数
         case "EQN":
+            if (fx.solveActive) {
+                fx.solveAppend(".");
+                break;
+            }
             fx.eqnAppendDigit(".");
             break;
         case "STAT":
@@ -145,6 +165,10 @@ export const onNegate = () => {
             fx.setFxError("Invalid digit");
             break;
         case "EQN":
+            if (fx.solveActive) {
+                fx.solveAppend("-");
+                break;
+            }
             // 未选择方程类型时忽略负号；否则切换当前系数符号
             if (fx.eqnType !== null) {
                 fx.eqnAppendDigit("-");
@@ -173,8 +197,11 @@ function onBinaryOp(op: string) {
         case "BASE_N":
             baseBinaryOp(op);
             break;
-        case "STAT":
         case "EQN":
+            if (fx.solveActive) {
+                fx.solveAppend(op);
+                break;
+            }
             if (op === "-") {
                 fx.eqnAppendDigit("-");
             }
@@ -268,6 +295,10 @@ export const onEq = () => {
             }
             break;
         case "EQN":
+            if (fx.solveActive) {
+                onSolveEnter();
+                break;
+            }
             fx.eqnEnter();
             break;
         case "STAT":
@@ -313,6 +344,10 @@ export const onDel = () => {
             fx.baseBackspace();
             break;
         case "EQN":
+            if (fx.solveActive) {
+                fx.solveBackspace();
+                break;
+            }
             fx.eqnBackspace();
             break;
         case "STAT":
@@ -342,6 +377,15 @@ export const onAc = () => {
             fx.baseClear();
             break;
         case "EQN":
+            if (fx.solveActive) {
+                // 第一次 AC 清空当前输入；再次 AC 退出 SOLVE 回类型选择
+                if (fx.solveExpr || fx.solveGuess || fx.solveResult || fx.solveError) {
+                    fx.solveClearAll();
+                } else {
+                    fx.exitSolve();
+                }
+                break;
+            }
             fx.eqnClearAll();
             break;
         case "STAT":
@@ -517,7 +561,71 @@ export const onEqnTypeSelect = (d: string) => {
     const t = map[d];
     if (t) {
         fx.setEqnType(t);
+        return;
     }
+    if (d === "5") {
+        fx.enterSolve();
+    }
+};
+
+/* ================================================================== */
+/* SOLVE：方程输入 / 初始猜测 / 求解                                    */
+/* ================================================================== */
+
+/** 在 SOLVE 输入中追加一个按键符号（函数键、变量、常数等） */
+export const onSolveKey = (s: string) => {
+    if (!fx.solveActive) {
+        return;
+    }
+    fx.solveAppend(s);
+};
+
+/** 输入变量字母（ALPHA+X/Y）：追加并记录求解变量 */
+export const onSolveVar = (v: string) => {
+    if (!fx.solveActive) {
+        return;
+    }
+    fx.solveVariable = v;
+    fx.solveAppend(v);
+};
+
+/** = 键：一键 SOLVE —— 输入方程后直接求 f(x)=0（默认初值 0）；
+ *  结果界面直接输入数字可换初始猜测重算；再按 = 开始新方程。 */
+export const onSolveEnter = () => {
+    if (!fx.solveActive) {
+        return;
+    }
+    if (fx.solveStage === "input") {
+        try {
+            solveFn = compileEquation(fx.solveExpr);
+            fx.solveVariable = solveFn.variable;
+            fx.solveError = "";
+            const result = solveByNewton(solveFn.eval, { guess: 0 });
+            fx.setSolveResult(result);
+        } catch (e) {
+            fx.setSolveError((e as Error).message || "Syntax ERROR");
+            solveFn = null;
+        }
+        return;
+    }
+    if (fx.solveStage === "guess") {
+        // 结果后输入数字 = 换初始猜测重算
+        const guess = parseFloat(fx.solveGuess === "" ? "0" : fx.solveGuess);
+        if (!Number.isFinite(guess)) {
+            fx.setSolveError("Invalid initial guess");
+            return;
+        }
+        if (!solveFn) {
+            fx.setSolveError("Syntax ERROR");
+            return;
+        }
+        const result = solveByNewton(solveFn.eval, { guess });
+        fx.setSolveResult(result);
+        return;
+    }
+    // result：= 开始新方程
+    fx.solveClearAll();
+    solveFn = null;
 };
 
 /* ================================================================== */
@@ -568,6 +676,32 @@ export const fxScreenLines = (): string[] => {
             return lines;
         }
         case "EQN": {
+            // SOLVE 子流程屏幕
+            if (fx.solveActive) {
+                if (fx.solveError) {
+                    return ["SOLVE", fx.solveError];
+                }
+                if (fx.solveStage === "result" && fx.solveResult) {
+                    const r = fx.solveResult;
+                    const lines: string[] = [
+                        `${fx.solveVariable}=${formatRoot(r.root)}`
+                    ];
+                    if (r.converged) {
+                        lines.push(`L-R=${formatRoot(r.fVal)}`);
+                    } else {
+                        lines.push(r.message || "NO SOLUTION");
+                    }
+                    return lines;
+                }
+                if (fx.solveStage === "guess") {
+                    return [
+                        "SOLVE",
+                        `f(${fx.solveVariable})=0`,
+                        `${fx.solveVariable}? ${fx.solveGuess === "" ? "0" : fx.solveGuess}`
+                    ];
+                }
+                return ["SOLVE", `f(${fx.solveVariable})=`, fx.solveExpr || "0"];
+            }
             if (fx.eqnDone && fx.eqnResult) {
                 const names = eqnVarNames(fx.eqnType!);
                 const lines = fx.eqnResult.roots.map((r, i) => `${names[i]}=${r}`);
@@ -577,7 +711,7 @@ export const fxScreenLines = (): string[] => {
                 return lines.length > 0 ? lines : ["NO SOLUTION"];
             }
             if (fx.eqnType === null) {
-                return ["EQN", "1:aX²+bX+c=0", "2:aX³+...=0", "3:2-linear", "4:3-linear"];
+                return ["EQN", "1:aX²+bX+c=0", "2:aX³+...=0", "3:2-linear", "4:3-linear", "5:SOLVE"];
             }
             const names = EQN_COEFF_NAMES[fx.eqnType];
             const idx = fx.eqnCoeffs.length;

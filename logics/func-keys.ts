@@ -95,6 +95,7 @@ export const onR2C1Click = () => {
 
 export const onR2C2Click = () => {
     if (FX.isFxModeActive() || fx.showModeMenu) {
+        if (FX.solveActive()) FX.onSolveKey("sqrt(");
         cs.clearFuncMode();
         return;
     }
@@ -127,6 +128,7 @@ export const onR2C3Click = () => {
 
 export const onR2C4Click = () => {
     if (FX.isFxModeActive() || fx.showModeMenu) {
+        if (FX.solveActive()) FX.onSolveKey("^");
         cs.clearFuncMode();
         return;
     }
@@ -145,6 +147,7 @@ export const onR2C4Click = () => {
 
 export const onR2C5Click = () => {
     if (FX.isFxModeActive() || fx.showModeMenu) {
+        if (FX.solveActive() && cs.funcMode !== "SHIFT") FX.onSolveKey("log(");
         cs.clearFuncMode();
         return;
     }
@@ -163,6 +166,11 @@ export const onR2C5Click = () => {
 
 export const onR2C6Click = () => {
     if (FX.isFxModeActive() || fx.showModeMenu) {
+        if (FX.solveActive()) {
+            if (cs.funcMode === "SHIFT") FX.onSolveKey("exp(");
+            else if (cs.funcMode === "ALPHA") FX.onSolveKey("e");
+            else FX.onSolveKey("ln(");
+        }
         cs.clearFuncMode();
         return;
     }
@@ -260,6 +268,7 @@ export const onR3C3Click = () => {
 
 export const onR3C4Click = () => {
     if (FX.isFxModeActive() || fx.showModeMenu) {
+        if (FX.solveActive()) FX.onSolveKey(cs.funcMode === "SHIFT" ? "asin(" : "sin(");
         cs.clearFuncMode();
         return;
     }
@@ -291,6 +300,7 @@ export const onR3C4Click = () => {
 
 export const onR3C5Click = () => {
     if (FX.isFxModeActive() || fx.showModeMenu) {
+        if (FX.solveActive()) FX.onSolveKey(cs.funcMode === "SHIFT" ? "acos(" : "cos(");
         cs.clearFuncMode();
         return;
     }
@@ -321,6 +331,7 @@ export const onR3C5Click = () => {
 
 export const onR3C6Click = () => {
     if (FX.isFxModeActive() || fx.showModeMenu) {
+        if (FX.solveActive()) FX.onSolveKey(cs.funcMode === "SHIFT" ? "atan(" : "tan(");
         cs.clearFuncMode();
         return;
     }
@@ -391,6 +402,8 @@ export const onR4C3Click = () => {
     if (FX.isFxModeActive() || fx.showModeMenu) {
         if (fx.mode === "CMPLX") {
             fx.cplxAppend("(");
+        } else if (FX.solveActive()) {
+            FX.onSolveKey("(");
         }
         cs.clearFuncMode();
         return;
@@ -410,6 +423,9 @@ export const onR4C4Click = () => {
     if (FX.isFxModeActive() || fx.showModeMenu) {
         if (fx.mode === "CMPLX") {
             fx.cplxAppend(")");
+        } else if (FX.solveActive()) {
+            if (cs.funcMode === "ALPHA") FX.onSolveVar("x");
+            else FX.onSolveKey(")");
         }
         cs.clearFuncMode();
         return;
@@ -433,6 +449,7 @@ export const onR4C4Click = () => {
 
 export const onR4C5Click = () => {
     if (FX.isFxModeActive() || fx.showModeMenu) {
+        if (FX.solveActive() && cs.funcMode === "ALPHA") FX.onSolveVar("y");
         cs.clearFuncMode();
         return;
     }

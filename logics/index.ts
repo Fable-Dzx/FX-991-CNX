@@ -7,6 +7,7 @@ import * as LF from "./func-keys";
 import * as LB from "./basic-keys";
 import { KEY_ENTRIES } from "../modules/calc-core/objs/key-entry";
 import fx from "../observables/fx991-state";
+import * as FX from "./fx991";
 
 export const initialize = () => {
     Decimal.set({
@@ -41,6 +42,30 @@ const canInputEntry = () =>
 const onWindowKeydown = (e: KeyboardEvent) => {
     if (CALC_KEYS.has(e.key)) {
         e.preventDefault();
+    }
+
+    // SOLVE 方程输入阶段：PC 键盘直接打字输入（字母、数字、运算符、括号）
+    if (FX.solveActive() && fx.solveStage === "input") {
+        const k = e.key;
+        if (k === "=" || k === "Enter") {
+            e.preventDefault();
+            FX.onSolveEnter();
+            return;
+        }
+        if (k === "Backspace") {
+            // 交给下方 DEL 处理
+            LB.onR1C4Click();
+            e.preventDefault();
+            return;
+        }
+        if (k.length === 1 && /[a-zA-Z0-9+\-*/^().,= ]/.test(k)) {
+            e.preventDefault();
+            if (k === " " || k === ",") {
+                return; // 忽略空格与逗号
+            }
+            FX.onSolveKey(k);
+            return;
+        }
     }
 
     switch (e.key) {

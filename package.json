@@ -7,7 +7,8 @@
     "build": "next build",
     "export": "next build && next export -o docs && touch docs/.nojekyll",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "tsc tests/solve.test.ts modules/fx991/solve.ts --outDir test-dist --module commonjs --target es2019 --lib es2019,dom --moduleResolution node --esModuleInterop --skipLibCheck && node --test \"test-dist/tests/**/*.test.js\""
   },
   "dependencies": {
     "decimal.js": "^10.4.0",
@@ -20,11 +21,11 @@
     "sass": "^1.54.3"
   },
   "devDependencies": {
-  "@types/node": "20.11.0",
-  "@types/react": "18.2.0",
-  "@types/react-dom": "18.2.0",
-  "eslint": "8.57.0",
-  "eslint-config-next": "14.2.0",
-  "typescript": "5.3.3"
-}
+    "@types/node": "20.11.0",
+    "@types/react": "18.2.0",
+    "@types/react-dom": "18.2.0",
+    "eslint": "8.57.0",
+    "eslint-config-next": "14.2.0",
+    "typescript": "5.3.3"
+  }
 }
