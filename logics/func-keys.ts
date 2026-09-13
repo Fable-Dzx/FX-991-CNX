@@ -78,7 +78,20 @@ export const onR1C4Click = () => {
 };
 
 export const onR2C1Click = () => {
+    // 绿字 Solve：SHIFT + d/c 任意模式下直接进入 SOLVE 模式
+    if (cs.funcMode === "SHIFT") {
+        fx.setMode("EQN");
+        fx.enterSolve();
+        cs.clearFuncMode();
+        return;
+    }
     if (FX.isFxModeActive() || fx.showModeMenu) {
+        // 红字 =：BASE-N 模式下 d/c 键作为等号求值（真机语义）
+        if (fx.mode === "BASE_N") {
+            FX.onEq();
+            cs.clearFuncMode();
+            return;
+        }
         cs.clearFuncMode();
         return;
     }

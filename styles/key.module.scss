@@ -11,7 +11,14 @@
 
 .divLowerContent {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    line-height: 1.05;
+    justify-content: center;
+    column-gap: 5px;
+    line-height: 1;
+
+    span {
+        font-size: 8px;
+        font-weight: 600;
+    }
 }
