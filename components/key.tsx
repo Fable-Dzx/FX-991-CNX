@@ -5,6 +5,7 @@ interface KeyProps {
     role: "ksys" | "kfunc" | "kfuncr1" | "kbasic" | "kbasicy";
     content?: any;
     upperContent?: any;
+    lowerContent?: any;
     onClick: () => void;
 }
 
@@ -21,6 +22,8 @@ export default class Key extends React.Component<KeyProps> {
             <div>{this.props.upperContent}</div>
 
             <div>{this.props.content}</div>
+
+            <div className={styles.divLowerContent}>{this.props.lowerContent}</div>
         </div>
     );
 }

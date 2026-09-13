@@ -67,6 +67,12 @@ export default class FuncKeys extends React.Component {
                 <Key
                     role="kfunc"
                     content={<span role="klb">d/c</span>}
+                    lowerContent={
+                        <>
+                            <span role="klo">=</span>
+                            <span role="klg">Solve</span>
+                        </>
+                    }
                     onClick={() => {
                         L.onR2C1Click();
                     }}
