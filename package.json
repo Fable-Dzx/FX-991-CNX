@@ -8,7 +8,7 @@
     "export": "next build && next export -o docs && touch docs/.nojekyll",
     "start": "next start",
     "lint": "next lint",
-    "test": "tsc tests/solve.test.ts modules/fx991/solve.ts --outDir test-dist --module commonjs --target es2019 --lib es2019,dom --moduleResolution node --esModuleInterop --skipLibCheck && node --test \"test-dist/tests/**/*.test.js\""
+    "test": "tsc tests/solve.test.ts tests/equation.test.ts tests/newton.test.ts modules/fx991/solve.ts --outDir test-dist --module commonjs --target es2019 --lib es2019,dom --moduleResolution node --esModuleInterop --skipLibCheck && node --test \"test-dist/tests/**/*.test.js\""
   },
   "dependencies": {
     "decimal.js": "^10.4.0",

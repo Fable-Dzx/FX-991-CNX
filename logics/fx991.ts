@@ -37,9 +37,14 @@ import {
     formatRoot,
     CompiledFunction
 } from "../modules/fx991/solve";
+import type { AngleUnit } from "../modules/solver/equation";
 
 /** SOLVE 已编译方程（非 observable：函数不适合放入 MobX store） */
 let solveFn: CompiledFunction | null = null;
+
+/** 计算器 DRG 模式（D/R/G）→ 求解器角度单位 */
+const drgToAngleUnit = (drg: string): AngleUnit =>
+    drg === "D" ? "DEG" : drg === "G" ? "GRA" : "RAD";
 
 export const solveActive = (): boolean => fx.solveActive;
 
@@ -597,7 +602,7 @@ export const onSolveEnter = () => {
     }
     if (fx.solveStage === "input") {
         try {
-            solveFn = compileEquation(fx.solveExpr);
+            solveFn = compileEquation(fx.solveExpr, drgToAngleUnit(cs.drgMode));
             fx.solveVariable = solveFn.variable;
             fx.solveError = "";
             const result = solveByNewton(solveFn.eval, { guess: 0 });
