@@ -6,20 +6,11 @@
     > div:nth-child(1) {
         position: absolute;
         transform: translateY(-100%);
-    }
-}
-
-.divTopContent,
-.divLowerContent {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    column-gap: 5px;
-    line-height: 1;
-
-    span {
-        font-size: 8px;
-        font-weight: 600;
+        display: flex;
+        flex-direction: row;
+        align-items: baseline;
+        justify-content: center;
+        column-gap: 4px;
+        white-space: nowrap;
     }
 }
